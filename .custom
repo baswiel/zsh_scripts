@@ -1,0 +1,23 @@
+#settings
+alias zshrc="vim ~/.zshrc"
+alias short="vim ~/.custom/.aliases"
+alias gitfunctions= "vim $/.custom/.git_functions"
+
+#Git aliases
+alias gs="git status"
+alias g.="git add ."
+
+source ~/.custom/.git_functions
+
+#Directories
+alias code="cd ~/Code"
+
+#k8s aliases
+alias kgp="kubectl get pods"
+
+
+alias zed="open -a /Applications/Zed.app -n"
+alias pstorm="open -a /Applications/phpstorm.app -n"
+
+#deployment scripts
+source ~/.custom/.custom_deploy_scripts
