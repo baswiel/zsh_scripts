@@ -1,0 +1,61 @@
+function gnb(){
+gcd &&
+ git pull origin development &&
+ git checkout -b "$1"
+}
+
+function gtb() {
+    if [ -f .env ]; then
+        export $(grep -v '^#' .env | xargs)
+    fi
+
+    if [ -z "$1" ]; then
+        echo "Error: No ticket number provided."
+        echo "Usage: gtb <ticket-number>"
+        return 1
+    fi
+
+    if [ -z "$GIT_TICKET_PREFIX" ]; then
+        echo "Error: No GIT_TICKET_PREFIX set."
+        echo "Please set the GIT_TICKET_PREFIX in your .env file."
+        return 1
+    fi
+
+    git checkout development && \
+    git pull origin development && \
+    git checkout -b tickets/${GIT_TICKET_PREFIX}$1
+}
+
+function gdb() {
+    # Get the name of the current branch
+    local current_branch=$(git branch --show-current)
+
+    # Check if current branch is empty or the same as the development branch
+    if [ -z "$current_branch" ]; then
+        echo "No branch is currently checked out."
+        return 1
+    elif [ "$current_branch" = "development" ]; then
+        echo "You are currently on the development branch. Cannot delete the development branch."
+        return 1
+    fi
+
+    # Confirm deletion
+    echo "Are you sure you want to checkout the development branch and delete the branch '$current_branch'? (y/N): \c"
+    read confirm
+    case $confirm in
+        [yY][eE][sS]|[yY])
+            # Check out the development branch
+            echo "Checking out the development branch"
+            git checkout development
+
+            # Delete the current branch
+            echo "Deleting branch: $current_branch"
+            git branch -D "$current_branch"
+
+            echo "Operation completed successfully."
+            ;;
+        *)
+            echo "Operation cancelled."
+            ;;
+    esac
+}
