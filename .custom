@@ -1,3 +1,5 @@
+#!/bin/zsh
+
 #settings
 alias zshrc="vim ~/.zshrc"
 alias short="vim ~/.custom/.aliases"

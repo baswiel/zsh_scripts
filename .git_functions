@@ -1,3 +1,5 @@
+#!/bin/zsh
+
 function gnb(){
     if [ -z "$1" ]; then
         echo "Error: No branch name provided."
