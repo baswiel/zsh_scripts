@@ -1,7 +1,12 @@
 function gnb(){
-gcd &&
- git pull origin development &&
- git checkout -b "$1"
+    if [ -z "$1" ]; then
+        echo "Error: No branch name provided."
+        echo "Usage: gnb <branch-name>"
+        return 1
+    fi
+    gcd &&
+    git pull origin development &&
+    git checkout -b "$1"
 }
 
 function gtb() {
