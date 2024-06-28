@@ -1,5 +1,6 @@
 #!/bin/zsh
 
+#Git New branch
 function gnb(){
     if [ -z "$1" ]; then
         echo "Error: No branch name provided."
@@ -11,6 +12,7 @@ function gnb(){
     git checkout -b "$1"
 }
 
+#Git Ticket branch
 function gtb() {
     if [ -f .env ]; then
         export $(grep -v '^#' .env | xargs)
@@ -33,6 +35,7 @@ function gtb() {
     git checkout -b tickets/${GIT_TICKET_PREFIX}$1
 }
 
+#Git Delete Current Branch
 function gdb() {
     # Get the name of the current branch
     local current_branch=$(git branch --show-current)
