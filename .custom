@@ -2,12 +2,13 @@
 
 #settings
 alias zshrc="vim ~/.zshrc"
-alias short="vim ~/.custom/.aliases"
+alias short="vim ~/.custom/.custom"
 alias gitfunctions= "vim $/.custom/.git_functions"
 
 #Git aliases
 alias gs="git status"
 alias g.="git add ."
+alias gpl="git pull";
 
 source ~/.custom/.git_functions
 
