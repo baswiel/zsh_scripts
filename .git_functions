@@ -49,6 +49,12 @@ function gdb() {
         return 1
     fi
 
+    # Check for unstaged or uncommitted changes
+    if ! git diff-index --quiet HEAD --; then
+        echo "There are uncommitted changes in the branch '$current_branch'. Please commit or stash them before deleting the branch."
+        return 1
+    fi
+
     # Check if there are any unpushed commits
     local unpushed_commits=$(git log origin/$(git branch --show-current)..HEAD)
     if [ -n "$unpushed_commits" ]; then
