@@ -49,6 +49,13 @@ function gdb() {
         return 1
     fi
 
+    # Check if there are any unpushed commits
+    local unpushed_commits=$(git log origin/$(git branch --show-current)..HEAD)
+    if [ -n "$unpushed_commits" ]; then
+        echo "There are unpushed commits in the branch '$current_branch'. Please push them before deleting the branch."
+        return 1
+    fi
+
     # Confirm deletion
     echo "Are you sure you want to checkout the development branch and delete the branch '$current_branch'? (y/N): \c"
     read confirm
