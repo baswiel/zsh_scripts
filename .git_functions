@@ -14,7 +14,7 @@ function gnb(){
 
 #Git Ticket branch
 function gtb() {
-    if [ -f .env ]; then
+if [ -f .env ]; then
         export $(grep -v '^#' .env | xargs)
     fi
 
@@ -30,9 +30,19 @@ function gtb() {
         return 1
     fi
 
-    git checkout development && \
-    git pull origin development && \
-    git checkout -b tickets/${GIT_TICKET_PREFIX}$1
+    # Define branch name
+    local branch_name="tickets/${GIT_TICKET_PREFIX}$1"
+
+    # Check if branch already exists
+    if git show-ref --quiet refs/heads/$branch_name; then
+        echo "Switching to existing branch: $branch_name"
+        git checkout $branch_name
+    else
+        echo "Creating and switching to new branch: $branch_name"
+        git checkout development && \
+        git pull origin development && \
+        git checkout -b $branch_name
+    fi
 }
 
 #Git Delete Current Branch
