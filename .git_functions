@@ -30,6 +30,23 @@ if [ -f .env ]; then
         return 1
     fi
 
+    # Check for changes in database/ directory compared to development
+    current_branch=$(git rev-parse --abbrev-ref HEAD)
+    if [ "$current_branch" != "development" ]; then
+        changed_files=$(git diff --name-only --diff-filter=A development...$current_branch | grep '^database/' | wc -l | awk '{print $1}')
+        if [ "$changed_files" -gt 0 ]; then
+            echo "⚠️  Warning: $changed_files new files in the 'database/' directory."
+            echo -e "You may need to run: \033[1;32mphp artisan migrate:rollback --step=$changed_files\033[0m"
+            echo "Do you want to continue switching branches? (y/n)"
+            read -r user_input
+
+            if [[ "$user_input" != "y" && "$user_input" != "Y" ]]; then
+                echo "Branch switch cancelled."
+                return 1
+            fi
+        fi
+    fi
+
     # Define branch name
     local branch_name="tickets/${GIT_TICKET_PREFIX}$1"
 
