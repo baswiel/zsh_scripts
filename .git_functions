@@ -62,6 +62,107 @@ if [ -f .env ]; then
     fi
 }
 
+#Git Feature branch
+function gfb() {
+if [ -f .env ]; then
+        export $(grep -v '^#' .env | xargs)
+    fi
+
+    if [ -z "$1" ]; then
+        echo "Error: No ticket number provided."
+        echo "Usage: gfb <ticket-number>"
+        return 1
+    fi
+
+    if [ -z "$GIT_TICKET_PREFIX" ]; then
+        echo "Error: No GIT_TICKET_PREFIX set."
+        echo "Please set the GIT_TICKET_PREFIX in your .env file."
+        return 1
+    fi
+
+    # Check for changes in database/ directory compared to development
+    current_branch=$(git rev-parse --abbrev-ref HEAD)
+    if [ "$current_branch" != "development" ]; then
+        changed_files=$(git diff --name-only --diff-filter=A development...$current_branch | grep '^database/' | wc -l | awk '{print $1}')
+        if [ "$changed_files" -gt 0 ]; then
+            echo "⚠️  Warning: $changed_files new files in the 'database/' directory."
+            echo -e "You may need to run: \033[1;32mphp artisan migrate:rollback --step=$changed_files\033[0m"
+            echo "Do you want to continue switching branches? (y/n)"
+            read -r user_input
+
+            if [[ "$user_input" != "y" && "$user_input" != "Y" ]]; then
+                echo "Branch switch cancelled."
+                return 1
+            fi
+        fi
+    fi
+
+    # Define branch name
+    local branch_name="feat/${GIT_TICKET_PREFIX}$1"
+
+    # Check if branch already exists
+    if git show-ref --quiet refs/heads/$branch_name; then
+        echo "Switching to existing branch: $branch_name"
+        git checkout $branch_name
+    else
+        echo "Creating and switching to new branch: $branch_name"
+        git checkout development && \
+        git pull origin development && \
+        git checkout -b $branch_name
+    fi
+}
+
+#Git Feature branch
+function gfixb() {
+if [ -f .env ]; then
+        export $(grep -v '^#' .env | xargs)
+    fi
+
+    if [ -z "$1" ]; then
+        echo "Error: No ticket number provided."
+        echo "Usage: gfixb <ticket-number>"
+        return 1
+    fi
+
+    if [ -z "$GIT_TICKET_PREFIX" ]; then
+        echo "Error: No GIT_TICKET_PREFIX set."
+        echo "Please set the GIT_TICKET_PREFIX in your .env file."
+        return 1
+    fi
+
+    # Check for changes in database/ directory compared to development
+    current_branch=$(git rev-parse --abbrev-ref HEAD)
+    if [ "$current_branch" != "development" ]; then
+        changed_files=$(git diff --name-only --diff-filter=A development...$current_branch | grep '^database/' | wc -l | awk '{print $1}')
+        if [ "$changed_files" -gt 0 ]; then
+            echo "⚠️  Warning: $changed_files new files in the 'database/' directory."
+            echo -e "You may need to run: \033[1;32mphp artisan migrate:rollback --step=$changed_files\033[0m"
+            echo "Do you want to continue switching branches? (y/n)"
+            read -r user_input
+
+            if [[ "$user_input" != "y" && "$user_input" != "Y" ]]; then
+                echo "Branch switch cancelled."
+                return 1
+            fi
+        fi
+    fi
+
+    # Define branch name
+    local branch_name="fix/${GIT_TICKET_PREFIX}$1"
+
+    # Check if branch already exists
+    if git show-ref --quiet refs/heads/$branch_name; then
+        echo "Switching to existing branch: $branch_name"
+        git checkout $branch_name
+    else
+        echo "Creating and switching to new branch: $branch_name"
+        git checkout development && \
+        git pull origin development && \
+        git checkout -b $branch_name
+    fi
+}
+
+
 #Git Delete Current Branch
 function gdb() {
     # Get the name of the current branch
@@ -108,4 +209,13 @@ function gdb() {
             echo "Operation cancelled."
             ;;
     esac
+}
+
+#Git Cleanup merged branches
+function gcleanup() {
+    echo "Cleaning up merged branches..."
+    git branch --merged development \
+        | grep -E '^(  )?(tickets/|feature/|feat/|fix/)' \
+        | grep -Ev '^(  )?(development|staging|production)$' \
+        | xargs -r git branch -d
 }
