@@ -12,6 +12,8 @@ alias deployscripts= "vim ~/.custom/.custom_deploy_scripts"
 alias gs="git status -sb"
 alias g.="git add ."
 alias gpl="git pull";
+alias gd='git diff --output-indicator-new=" " --output-indicator-old=" "'
+alias gl='git log --graph --all --pretty=format:"%C(magenta)%h %C(white) %an  %ar%C(blue)  %D%n%s%n"'
 
 source ~/.custom/.git_functions
 
